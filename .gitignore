@@ -1,0 +1,29 @@
+# Environments
+.env
+.venv
+env
+venv
+myvenv
+
+# Python caches
+__pycache__
+*.pyc
+
+# Node
+node_modules
+dist
+build
+.vite
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Temporary files
+temp/*
+
+# Uploads and generated assets
+backend/uploads/*
