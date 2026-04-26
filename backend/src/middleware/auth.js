@@ -12,23 +12,6 @@ export async function requireAuth(req, res, next) {
   try {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, env.jwtSecret);
-
-    if (decoded.isHardcodedAdmin && decoded.role === "admin") {
-      req.user = {
-        id: "hardcoded-admin",
-        _id: "hardcoded-admin",
-        username: "admin",
-        email: "admin@construction.local",
-        fullName: "System Administrator",
-        jobTitle: "Platform Admin",
-        bio: "",
-        avatarUrl: "",
-        role: "admin",
-      };
-      next();
-      return;
-    }
-
     const user = await User.findById(decoded.userId).select("-passwordHash");
 
     if (!user) {

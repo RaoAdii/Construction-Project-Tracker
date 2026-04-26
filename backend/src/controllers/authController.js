@@ -31,23 +31,35 @@ function buildAuthResponse(user) {
 }
 
 function buildHardcodedAdminResponse() {
-  return {
-    token: generateToken({
-      userId: HARDCODED_ADMIN.id,
-      role: HARDCODED_ADMIN.role,
-      isHardcodedAdmin: true,
-    }),
-    user: {
-      id: HARDCODED_ADMIN.id,
+  throw new Error("Use buildAuthResponse with a persisted admin user.");
+}
+
+async function findOrCreateHardcodedAdmin() {
+  let adminUser = await User.findOne({ email: HARDCODED_ADMIN.email });
+
+  if (!adminUser) {
+    const passwordHash = await User.hashPassword(HARDCODED_ADMIN.password);
+    adminUser = await User.create({
       username: HARDCODED_ADMIN.username,
       email: HARDCODED_ADMIN.email,
+      passwordHash,
       fullName: HARDCODED_ADMIN.fullName,
       jobTitle: HARDCODED_ADMIN.jobTitle,
       bio: HARDCODED_ADMIN.bio,
       avatarUrl: HARDCODED_ADMIN.avatarUrl,
       role: HARDCODED_ADMIN.role,
-    },
-  };
+    });
+  } else if (adminUser.role !== "admin") {
+    adminUser.role = "admin";
+    adminUser.username = HARDCODED_ADMIN.username;
+    adminUser.fullName = HARDCODED_ADMIN.fullName;
+    adminUser.jobTitle = HARDCODED_ADMIN.jobTitle;
+    adminUser.bio = HARDCODED_ADMIN.bio;
+    adminUser.avatarUrl = HARDCODED_ADMIN.avatarUrl;
+    await adminUser.save();
+  }
+
+  return adminUser;
 }
 
 export async function register(req, res, next) {
@@ -108,7 +120,8 @@ export async function login(req, res, next) {
       email === HARDCODED_ADMIN.email &&
       password === HARDCODED_ADMIN.password
     ) {
-      return res.json(buildHardcodedAdminResponse());
+      const adminUser = await findOrCreateHardcodedAdmin();
+      return res.json(buildAuthResponse(adminUser));
     }
 
     const user = await User.findOne({ email });
