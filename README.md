@@ -84,7 +84,18 @@ Frontend example:
 VITE_API_URL=http://localhost:5000/api
 ```
 
-## Notes
+## Admin Login
 
-- MongoDB is the only database used by the new application.
-- Django, SQLite, email service code, and notification code have been removed from the repository.
+The project includes a fixed admin login for the admin portal.
+
+- Email: `admin@construction.local`
+- Password: `Admin@12345`
+
+Use this account to access:
+
+- the admin login mode
+- the admin portal
+- all projects across the system
+
+If the backend was already running before auth changes were made, restart it before using the admin login.
+
